@@ -1,0 +1,235 @@
+{
+  "tipos_servico": [
+    {
+      "id": 1,
+      "descricao": "Casquinha"
+    },
+    {
+      "id": 2,
+      "descricao": "Cascão"
+    },
+    {
+      "id": 3,
+      "descricao": "Copinho"
+    },
+    {
+      "id": 4,
+      "descricao": "Pote (500ml)"
+    }
+  ],
+  "tamanhos": [
+    {
+      "id": 1,
+      "descricao": "1 bola"
+    },
+    {
+      "id": 2,
+      "descricao": "2 bolas"
+    },
+    {
+      "id": 3,
+      "descricao": "3 bolas"
+    }
+  ],
+  "status_pedido": [
+    {
+      "id": 1,
+      "descricao": "Pedido recebido"
+    },
+    {
+      "id": 2,
+      "descricao": "Montando"
+    },
+    {
+      "id": 3,
+      "descricao": "Pronto para retirada"
+    },
+    {
+      "id": 4,
+      "descricao": "Entregue"
+    },
+    {
+      "id": 5,
+      "descricao": "Pagamento pendente"
+    },
+    {
+      "id": 6,
+      "descricao": "Pedido confirmado"
+    }
+  ],
+  "pedidos": [
+    {
+      "nome": "Yan",
+      "servico": {
+        "id": 2,
+        "descricao": "Cascão"
+      },
+      "tamanho": {
+        "id": 2,
+        "descricao": "2 bolas"
+      },
+      "coberturas": [
+        {
+          "id": 1,
+          "nome": "Calda de chocolate",
+          "descricao": "",
+          "foto": "/img/sorvete_1.svg",
+          "valor": 2,
+          "eh_novidade": false
+        }
+      ],
+      "adicionais": [
+        {
+          "id": 1,
+          "nome": "Chantilly",
+          "descricao": "",
+          "foto": "/img/sorvete_4.svg",
+          "valor": 3,
+          "eh_novidade": false
+        }
+      ],
+      "sorvete": {
+        "id": 1,
+        "nome": "Chocolate",
+        "foto": "/img/sorvete_1.svg",
+        "descricao": "Sorvete cremoso de chocolate belga, intenso e encorpado.",
+        "valor": 10,
+        "eh_novidade": true
+      },
+      "statusId": "2",
+      "id": 1
+    }
+  ],
+  "opcionais": {
+    "coberturas": [
+      {
+        "id": 1,
+        "nome": "Calda de chocolate",
+        "descricao": "Calda quente de chocolate meio amargo",
+        "foto": "/img/sorvete_1.svg",
+        "valor": 2,
+        "eh_novidade": false
+      },
+      {
+        "id": 2,
+        "nome": "Calda de morango",
+        "descricao": "Calda de morango feita na casa",
+        "foto": "/img/sorvete_2.svg",
+        "valor": 2,
+        "eh_novidade": false
+      },
+      {
+        "id": 3,
+        "nome": "Granulado",
+        "descricao": "Granulado colorido crocante",
+        "foto": "/img/sorvete_5.svg",
+        "valor": 2,
+        "eh_novidade": false
+      },
+      {
+        "id": 4,
+        "nome": "Paçoca triturada",
+        "descricao": "Paçoca de amendoim triturada",
+        "foto": "/img/sorvete_3.svg",
+        "valor": 3,
+        "eh_novidade": true
+      }
+    ],
+    "adicionais": [
+      {
+        "id": 1,
+        "nome": "Chantilly",
+        "descricao": "",
+        "foto": "/img/sorvete_4.svg",
+        "valor": 3,
+        "eh_novidade": false
+      },
+      {
+        "id": 2,
+        "nome": "Leite condensado",
+        "descricao": "",
+        "foto": "/img/sorvete_3.svg",
+        "valor": 3,
+        "eh_novidade": false
+      },
+      {
+        "id": 3,
+        "nome": "Cereja",
+        "descricao": "",
+        "foto": "/img/sorvete_2.svg",
+        "valor": 2,
+        "eh_novidade": false
+      },
+      {
+        "id": 4,
+        "nome": "Castanhas",
+        "descricao": "",
+        "foto": "/img/sorvete_5.svg",
+        "valor": 4,
+        "eh_novidade": true
+      }
+    ]
+  },
+  "menu": {
+    "especiais": [
+      {
+        "id": 1,
+        "nome": "Banana Split",
+        "foto": "/img/especial_1.svg",
+        "descricao": "Três bolas (chocolate, morango e creme) sobre banana fatiada, com calda, chantilly, castanhas e cereja. A sobremesa clássica da casa.",
+        "valor": 22,
+        "eh_novidade": true
+      }
+    ],
+    "sorvetes": [
+      {
+        "id": 1,
+        "nome": "Chocolate",
+        "foto": "/img/sorvete_1.svg",
+        "descricao": "Sorvete cremoso de chocolate belga, intenso e encorpado. Para os que amam chocolate de verdade.",
+        "valor": 10,
+        "eh_novidade": false
+      },
+      {
+        "id": 2,
+        "nome": "Morango",
+        "foto": "/img/sorvete_2.svg",
+        "descricao": "Sorvete de morango feito com fruta selecionada, doce na medida e bem refrescante.",
+        "valor": 10,
+        "eh_novidade": true
+      },
+      {
+        "id": 3,
+        "nome": "Baunilha",
+        "foto": "/img/sorvete_3.svg",
+        "descricao": "Clássico sorvete de baunilha com fava natural. Combina com qualquer cobertura.",
+        "valor": 9,
+        "eh_novidade": false
+      },
+      {
+        "id": 4,
+        "nome": "Creme",
+        "foto": "/img/sorvete_4.svg",
+        "descricao": "Sorvete de creme tradicional, suave e levemente adocicado. Um sabor que agrada a todos.",
+        "valor": 9,
+        "eh_novidade": false
+      },
+      {
+        "id": 5,
+        "nome": "Flocos",
+        "foto": "/img/sorvete_5.svg",
+        "descricao": "Sorvete de creme com raspas de chocolate por toda a massa. Crocante e cremoso ao mesmo tempo.",
+        "valor": 11,
+        "eh_novidade": true
+      },
+      {
+        "id": 6,
+        "nome": "Napolitano",
+        "foto": "/img/sorvete_6.svg",
+        "descricao": "Três sabores em um: chocolate, morango e creme juntos na mesma bola. Para quem não consegue escolher.",
+        "valor": 12,
+        "eh_novidade": true
+      }
+    ]
+  }
+}
