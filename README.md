@@ -1,174 +1,215 @@
-# 🍦 Bella Gelato
+# 🍦 Banco Bella Gelato API
 
-Sistema de pedidos de uma **sorveteria**, desenvolvido em **Vue 3**, evoluído e
-customizado a partir do sistema base **T-Burguer** (trabalhado em sala de aula).
-A estrutura original foi integralmente reaproveitada — Options API, `vue-router`,
-`fetch`, propriedade global `$apiUrl` e JSON Server — e adaptada para um novo
-segmento comercial.
+API mockada desenvolvida com JSON Server para fornecer os dados do sistema **Bella Gelato**, uma evolução do projeto T-Burguer desenvolvida com Vue 3.
+
+Esta API é responsável pelo armazenamento e gerenciamento dos dados consumidos pela aplicação, incluindo cardápio, pedidos e status dos pedidos.
 
 ---
 
-## 1. Visão Geral
+# 📖 Visão Geral
 
-O segmento escolhido foi uma **sorveteria**. O cliente navega por um cardápio de
-sabores, monta seu pedido (escolhendo **como servir**, **tamanho**, **coberturas** e
-**adicionais**) e acompanha a lista de pedidos realizados, podendo alterar o status e
-excluir registros.
+O projeto **Bella Gelato** foi criado a partir da adaptação completa do sistema T-Burguer para o segmento de sorveteria.
 
-### Alterações estruturais (dados e regras)
+A API fornece os dados necessários para:
 
-O campo *"Ponto da carne"* do T-Burguer não faz sentido para uma sorveteria e foi
-substituído por *"Como servir"* (casquinha, cascão, copinho, pote). Foi criado o campo
-obrigatório *"Tamanho"* (1, 2 ou 3 bolas). O objeto principal `burguer` virou
-`sorvete`, e os opcionais foram remodelados:
+* Exibição do cardápio de sorvetes
+* Consulta dos tipos de serviço
+* Consulta dos tamanhos disponíveis
+* Consulta de coberturas e adicionais
+* Cadastro de pedidos
+* Atualização do status dos pedidos
+* Exclusão de pedidos
+* Monitoramento da produção dos pedidos
 
-| T-Burguer (original) | Bella Gelato (novo) |
-|---|---|
-| `burguer` (item principal) | `sorvete` |
-| `tipos_pontos` / *"Ponto da carne"* | `tipos_servico` / *"Como servir"* |
-| *(não existia)* | `tamanhos` / *"Tamanho"* (campo novo) |
-| `opcionais.complemento` | `opcionais.coberturas` |
-| `opcionais.bebidas` | `opcionais.adicionais` |
-| `menu.burgues` | `menu.sorvetes` |
+---
 
-Reflexo dessas mudanças no objeto enviado para a API ao confirmar um pedido:
+# 🗂 Estrutura dos Dados
 
-```js
-// PedidoComponent.vue
-const dadosPedido = {
-  nome: this.nomeCliente,
-  servico: this.servicoSelecionado,   // antes: ponto (ponto da carne)
-  tamanho: this.tamanhoSelecionado,   // campo novo
-  coberturas: Array.from(this.listaCoberturasSelecionadas),
-  adicionais: Array.from(this.listaAdicionaisSelecionados),
-  sorvete: this.sorvete,              // antes: burguer
-  statusId: 1,
-};
+## Menu
+
+```json
+{
+  "sorvetes": [],
+  "tipos_servico": [],
+  "tamanhos": [],
+  "coberturas": [],
+  "adicionais": []
+}
 ```
 
-### Alterações visuais
+## Pedido
 
-Novo nome, logo, banner, troca completa das imagens (sorvetes), textos e paleta de
-cores (de dourado/preto para rosa/framboesa). Exemplo na barra de navegação:
+```json
+{
+  "id": 1,
+  "nome": "Gabriel",
+  "servico": "Casquinha",
+  "tamanho": "2 bolas",
+  "coberturas": ["Chocolate"],
+  "adicionais": ["Granulado"],
+  "sorvete": "Morango",
+  "statusId": 1
+}
+```
 
-```css
-/* NavBarComponent.vue */
-#nav {
-  background-color: #ad1457;        /* framboesa */
-  border-bottom: #f48fb1 4px solid; /* rosa */
+## Status do Pedido
+
+```json
+{
+  "id": 1,
+  "tipo": "Solicitado"
 }
 ```
 
 ---
 
-## 2. Solução Técnica dos Alertas
+# 🚀 Endpoints Disponíveis
 
-A comunicação visual foi centralizada em um único componente reutilizável,
-`AlertaComponent.vue`, que recebe três `props`: `tipo`, `mensagem` e `visivel`.
-O `tipo` define a cor semântica e o ícone exibido:
+## Cardápio
 
-| Tipo | Cor | Uso |
-|---|---|---|
-| `erro` | 🔴 Vermelho | Erros de preenchimento ou ações inválidas |
-| `aviso` | 🟠 Laranja | Avisos importantes |
-| `info` | 🔵 Azul | Informações contextuais |
-| `sucesso` | 🟢 Verde | Sucesso ao cadastrar, editar ou excluir |
-
-A **exibição dinâmica** funciona assim: a cor é aplicada por *class binding*
-(`alerta-${tipo}`) e o ícone é retornado por um método (`obterIcone`) a partir do
-`tipo`:
-
-```js
-// AlertaComponent.vue
-methods: {
-  obterIcone() {
-    const icones = { erro: "✕", aviso: "⚠", info: "ℹ", sucesso: "✓" };
-    return icones[this.tipo] || "ℹ";
-  },
-},
+```http
+GET /menu
 ```
 
-```html
-<div v-if="visivel" :class="['alerta', `alerta-${tipo}`]" role="alert">
-  <span class="alerta-icone">{{ obterIcone() }}</span>
-  <span class="alerta-mensagem">{{ mensagem }}</span>
-</div>
-```
-
-Cada tela mantém um objeto reativo `alerta` em `data()` e um método único
-`mostrarAlerta(tipo, mensagem)` que dispara o alerta certo:
-
-```js
-data() {
-  return { alerta: { visivel: false, tipo: "info", mensagem: "" } };
-},
-methods: {
-  mostrarAlerta(tipo, mensagem) {
-    this.alerta = { visivel: true, tipo, mensagem };
-  },
-}
-```
-
-A **lógica de validação** roda antes de enviar o pedido: `validarPedido()` bloqueia a
-confirmação quando falta um campo obrigatório e dispara o alerta vermelho de erro:
-
-```js
-validarPedido() {
-  if (this.nomeCliente.trim() === "") {
-    this.mostrarAlerta("erro", "Informe o nome do cliente para continuar.");
-    return false;
-  }
-  if (this.servicoSelecionado === "") {
-    this.mostrarAlerta("erro", "Selecione como deseja ser servido.");
-    return false;
-  }
-  if (this.tamanhoSelecionado === "") {
-    this.mostrarAlerta("erro", "Selecione o tamanho do seu sorvete.");
-    return false;
-  }
-  return true;
-}
-```
-
-Em caso de sucesso, é exibido o alerta verde e o usuário é redirecionado
-automaticamente para a tela de pedidos. Na exclusão, o registro é removido do array
-local (re-renderização imediata) seguido do alerta verde de sucesso.
+Retorna todos os dados necessários para montagem dos pedidos.
 
 ---
 
-## 3. Link da API
+## Pedidos
 
-URL pública da API mockada (JSON Server, publicada no Render):
+```http
+GET /pedidos
+POST /pedidos
+PATCH /pedidos/:id
+DELETE /pedidos/:id
+```
 
-**‹INSIRA AQUI A URL DA SUA API›**
-
----
-
-## 4. Link de Produção
-
-Link ativo do projeto publicado (Vercel):
-
-**‹INSIRA AQUI O LINK .vercel.app›**
+Permite consultar, cadastrar, atualizar e remover pedidos.
 
 ---
 
-## 5. Link do Repositório
+## Status dos Pedidos
 
-Código-fonte público no GitHub:
+```http
+GET /status_pedido
+```
 
-- **Front-end:** ‹INSIRA AQUI O LINK DO REPOSITÓRIO DO FRONT›
-- **Banco-json (API):** ‹INSIRA AQUI O LINK DO REPOSITÓRIO DO BANCO›
+Retorna os status utilizados para acompanhamento dos pedidos.
 
 ---
 
-## ⚙️ Como rodar localmente
+# 🌐 API Publicada
+
+A API está disponível publicamente através do Render:
+
+**URL Base**
+
+https://banco-bella-gelato1.onrender.com
+
+### Exemplos de Endpoints
+
+**Menu**
+
+https://banco-bella-gelato1.onrender.com/menu
+
+**Pedidos**
+
+https://banco-bella-gelato1.onrender.com/pedidos
+
+**Status dos Pedidos**
+
+https://banco-bella-gelato1.onrender.com/status_pedido
+
+---
+
+# 🛠 Tecnologias Utilizadas
+
+* Node.js
+* JSON Server
+* Render
+* Git
+* GitHub
+
+---
+
+# ⚙️ Como Executar Localmente
+
+## Instalar dependências
 
 ```bash
-npm install          # instala as dependências
-npm run bancojson    # inicia o JSON Server na porta 3000
-npm run serve        # em outro terminal, roda a aplicação
+npm install
 ```
 
-> Crie um `.env.development` (copie de `.env.exemplo`) com
-> `VUE_APP_API_BASE_URL=http://localhost:3000`. O Vue só lê o `.env` ao iniciar;
-> após editar, reinicie o `npm run serve`.
+## Iniciar a API
+
+```bash
+npm start
+```
+
+A API ficará disponível em:
+
+```http
+http://localhost:3000
+```
+
+---
+
+# 📂 Repositórios do Projeto
+
+## Front-end (Vue 3)
+
+https://github.com/dantasz15/bella-gelato
+
+## API JSON Server
+
+https://github.com/dantasz15/banco-bella-gelato
+
+---
+
+# 🌍 Sistema em Produção
+
+Aplicação publicada no Vercel:
+
+https://bella-gelato.vercel.app
+
+---
+
+# 🔗 Arquitetura da Solução
+
+```text
+Usuário
+   │
+   ▼
+Bella Gelato (Vue 3)
+https://bella-gelato.vercel.app
+   │
+   ▼
+JSON Server API
+https://banco-bella-gelato1.onrender.com
+   │
+   ▼
+db.json
+```
+
+---
+
+# 👨‍💻 Autor
+
+**Gabriel Dantas**
+
+Projeto acadêmico desenvolvido para a disciplina de Desenvolvimento Web com Vue 3, aplicando conceitos de:
+
+* Componentização
+* Vue Router
+* Consumo de APIs REST
+* JSON Server
+* Experiência do Usuário (UX)
+* Validação de Formulários
+* Deploy em Produção (Vercel e Render)
+* Versionamento com Git e GitHub
+
+---
+
+# 📄 Licença
+
+Projeto desenvolvido para fins acadêmicos e educacionais.
